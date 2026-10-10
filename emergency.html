@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Donor Finder - Emergency Request</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="emergency">
+    <header>
+        <nav class="navbar">
+            <div class="logo">Blood Donor Finder</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="find-donor.html">Find Donor</a></li>
+                <li><a href="register.html">Register</a></li>
+                <li><a href="emergency.html">Emergency</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+  <section class="form-section">
+    <h2>Emergency Blood Request</h2>
+    <p class="form-intro">Urgent requirement? Submit details below. We'll notify matching donors immediately.</p>
+    
+    <form id="emergency-form" class="emergency-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="patient-name">Patient Name *</label>
+          <input type="text" id="patient-name" name="patientName" placeholder="Patient's full name" required>
+          <span id="patient-name-msg" class="field-msg"></span>
+        </div>
+        <div class="form-group">
+          <label>Required Blood Group *</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="bloodGroup" value="A+"> A+</label>
+            <label class="radio-label"><input type="radio" name="bloodGroup" value="A-"> A-</label>
+            <label class="radio-label"><input type="radio" name="bloodGroup" value="B+"> B+</label>
+            <label class="radio-label"><input type="radio" name="bloodGroup" value="B-"> B-</label>
+            <label class="radio-label"><input type="radio" name="bloodGroup" value="AB+"> AB+</label>
+            <label class="radio-label"><input type="radio" name="bloodGroup" value="AB-"> AB-</label>
+            <label class="radio-label"><input type="radio" name="bloodGroup" value="O+"> O+</label>
+            <label class="radio-label"><input type="radio" name="bloodGroup" value="O-"> O-</label>
+          </div>
+          <span id="emergency-blood-msg" class="field-msg"></span>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="emergency-location">Location / Hospital *</label>
+          <input type="text" id="emergency-location" name="location" placeholder="City, hospital name, area" required>
+          <span id="emergency-location-msg" class="field-msg"></span>
+        </div>
+        <div class="form-group">
+          <label for="emergency-phone">Contact Number *</label>
+          <div class="phone-input-group">
+            <span class="phone-prefix">+91</span>
+            <input type="tel" id="emergency-phone" name="phone" placeholder="10-digit number" maxlength="10" required>
+          </div>
+          <span id="emergency-phone-msg" class="field-msg"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="emergency-message-details">Message / Urgency Details</label>
+        <textarea id="emergency-message-details" name="message" rows="4" placeholder="Any additional details (e.g., 'Need 2 units by tonight', 'Patient in ICU')"></textarea>
+      </div>
+      <button type="submit" class="btn btn-danger">Submit Emergency Request</button>
+      <p id="emergency-message" class="form-message"></p>
+    </form>
+  </section>
+</main>
+
+    <footer>
+        <p>&copy; 2026 Blood Donor Finder | College Mini Project</p>
+    </footer>
+
+    <script src="js/script.js" defer></script>
+</body>
+</html>
