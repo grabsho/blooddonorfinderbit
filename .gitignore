@@ -1,0 +1,18 @@
+# Node / editor noise
+node_modules/
+npm-debug.log*
+.DS_Store
+Thumbs.db
+*.swp
+
+# Local environment overrides
+.env
+.env.local
+
+# Apps Script deployment artefacts
+# (appsscript.json IS committed on purpose: the V8 runtime declaration
+#  is required for the deployed script to behave the same locally.)
+
+# Local exports of donor data - never commit real records
+*.csv
+*-export.xlsx
