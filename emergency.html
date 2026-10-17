@@ -163,21 +163,6 @@
       margin-top: 10px;
     }
 
-    .emergency-field-message {
-      display: block;
-      color: var(--danger);
-      font-size: 0.85rem;
-      overflow-wrap: anywhere;
-    }
-
-    .emergency-field-message:empty {
-      display: none;
-    }
-
-    .emergency-field-message:not(:empty) {
-      margin-top: 4px;
-    }
-
     .emergency-privacy-note {
       margin: 24px 0;
       padding: 16px 18px;
@@ -193,10 +178,6 @@
 
     .emergency-privacy-note p {
       font-size: 0.9rem;
-    }
-
-    .emergency-message-output {
-      overflow-wrap: anywhere;
     }
 
     @media (max-width: 640px) {
@@ -243,7 +224,7 @@
     <nav class="navbar" aria-label="Main navigation">
 
       <a href="index.html" class="logo" aria-label="Blood Donor Finder home">
-        🩸 Blood Donor Finder
+        ðŸ©¸ Blood Donor Finder
       </a>
 
       <ul class="nav-links">
@@ -294,7 +275,7 @@
       <aside class="emergency-alert" aria-labelledby="urgent-notice-title">
 
         <span class="emergency-alert-icon" aria-hidden="true">
-          ⚠️
+          âš ï¸
         </span>
 
         <div>
@@ -338,9 +319,9 @@
               </label>
 
               <input type="text" id="patient-name" name="patientName" placeholder="Enter patient name" minlength="2"
-                maxlength="100" autocomplete="off" required>
+                maxlength="80" autocomplete="off" required>
 
-              <span id="patient-name-msg" class="emergency-field-message" aria-live="polite"></span>
+              <span id="patient-name-msg" class="field-msg" aria-live="polite"></span>
 
             </div>
 
@@ -398,7 +379,7 @@
 
               </fieldset>
 
-              <span id="emergency-blood-msg" class="emergency-field-message" aria-live="polite"></span>
+              <span id="emergency-blood-msg" class="field-msg" aria-live="polite"></span>
 
             </div>
 
@@ -418,9 +399,9 @@
               </label>
 
               <input type="text" id="emergency-location" name="location" placeholder="Hospital, area, city"
-                minlength="3" maxlength="250" required>
+                minlength="3" maxlength="200" required>
 
-              <span id="emergency-location-msg" class="emergency-field-message" aria-live="polite"></span>
+              <span id="emergency-location-msg" class="field-msg" aria-live="polite"></span>
 
             </div>
 
@@ -441,9 +422,65 @@
 
               </div>
 
-              <span id="emergency-phone-msg" class="emergency-field-message" aria-live="polite"></span>
+              <span id="emergency-phone-msg" class="field-msg" aria-live="polite"></span>
 
             </div>
+
+          </div>
+
+          <!-- Structured location: this is what donors are matched
+               against, so selecting it is what makes email alerts work. -->
+          <div class="form-row">
+
+            <div class="form-group">
+
+              <label for="emergency-state">
+                State or union territory
+              </label>
+
+              <select id="emergency-state" name="state">
+
+                <option value="">
+                  Select your state
+                </option>
+
+              </select>
+
+              <span id="emergency-state-msg" class="field-msg" aria-live="polite"></span>
+
+            </div>
+
+            <div class="form-group">
+
+              <label for="emergency-district">
+                District or city
+              </label>
+
+              <select id="emergency-district" name="district" disabled>
+
+                <option value="">
+                  Select a state first
+                </option>
+
+              </select>
+
+              <p>
+                Optional, but donors are only alerted when
+                this matches their saved district.
+              </p>
+
+              <span id="emergency-district-msg" class="field-msg" aria-live="polite"></span>
+
+            </div>
+
+          </div>
+
+          <!-- Spam trap: hidden from people, filled in by bots. -->
+          <div class="hp-field" aria-hidden="true">
+
+            <label for="hp-field">Leave this field empty</label>
+
+            <input type="text" id="hp-field" name="hpField" tabindex="-1" autocomplete="off">
 
           </div>
 
@@ -488,10 +525,10 @@
 
           <!-- Submission -->
           <button type="submit" class="btn btn-danger emergency-submit">
-            Submit Blood Request →
+            Submit Blood Request â†’
           </button>
 
-          <p id="emergency-message" class="form-message emergency-message-output" role="status" aria-live="polite"
+          <p id="emergency-message" class="form-message" role="status" aria-live="polite"
             aria-atomic="true"></p>
 
         </form>
@@ -506,7 +543,7 @@
   <footer>
 
     <p>
-      <strong>🩸 Blood Donor Finder</strong>
+      <strong>ðŸ©¸ Blood Donor Finder</strong>
     </p>
 
     <p>
@@ -516,13 +553,13 @@
 
     <p>
       <a href="index.html">Home</a>
-      &nbsp; · &nbsp;
+      &nbsp; Â· &nbsp;
       <a href="find-donor.html">Find Donor</a>
-      &nbsp; · &nbsp;
+      &nbsp; Â· &nbsp;
       <a href="register.html">Register</a>
-      &nbsp; · &nbsp;
+      &nbsp; Â· &nbsp;
       <a href="emergency.html">Blood Request</a>
-      &nbsp; · &nbsp;
+      &nbsp; Â· &nbsp;
       <a href="about.html">About</a>
     </p>
 

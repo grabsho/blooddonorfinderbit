@@ -223,6 +223,45 @@
 
         </section>
 
+        <!-- Live emergency requests -->
+        <section
+            class="search-section notifications-section"
+            aria-labelledby="notifications-heading"
+        >
+
+            <h2 id="notifications-heading">
+                Recent blood requests
+            </h2>
+
+            <p class="form-intro">
+                Requests submitted through this website, newest first.
+                Contact numbers appear partially masked here. If you have
+                consented to email alerts and this request matches your
+                blood group and area, you will receive the full contact
+                number by email.
+            </p>
+
+            <p
+                id="notifications-message"
+                class="results-message"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+            >
+                Loading recent blood requests...
+            </p>
+
+            <div
+                id="notifications-list"
+                class="notification-list"
+                aria-live="polite"
+                aria-busy="true"
+            >
+                <!-- Notification cards are rendered by js/script.js -->
+            </div>
+
+        </section>
+
         <!-- Search results -->
         <section
             class="search-section results-section"

@@ -535,14 +535,60 @@ legend {
   font-weight: 700;
 }
 
-.form-message,
-#results-message,
-#emergency-message {
-  margin-top: 16px;
-  font-weight: 600;
+/* Form feedback. These class names are produced by js/script.js through
+   setFieldMsg() and setStatus(), so they must live in the shared
+   stylesheet rather than inside a single page. */
+
+.field-msg,
+.results-message,
+.form-message {
   overflow-wrap: anywhere;
 }
 
+.field-msg {
+  display: block;
+  min-height: 0;
+  font-size: 0.85rem;
+}
+
+.field-msg:empty {
+  display: none;
+}
+
+.field-msg:not(:empty) {
+  margin-top: 4px;
+}
+
+.field-msg.invalid {
+  color: var(--danger);
+}
+
+.field-msg.valid {
+  color: var(--success);
+}
+
+.results-message,
+.form-message {
+  margin-top: 16px;
+  font-weight: 600;
+}
+
+.results-message.error,
+.form-message.error {
+  color: var(--danger);
+}
+
+.results-message.success,
+.form-message.success {
+  color: var(--success);
+}
+
+.results-message:empty,
+.form-message:empty {
+  display: none;
+}
+
+/* Kept as aliases for any markup still using the older names. */
 .error-message,
 .field-error,
 .validation-error {
@@ -554,6 +600,17 @@ legend {
 .field-success {
   color: var(--success);
   font-size: 0.9rem;
+}
+
+/* Honeypot: hidden from people, reachable by naive bots. */
+.hp-field {
+  position: absolute !important;
+  left: -9999px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
 /* ---------- Donor results ---------- */
@@ -576,7 +633,12 @@ legend {
   overflow-wrap: anywhere;
 }
 
+.donor-card .detail {
+  font-size: 0.92rem;
+}
+
 .donor-card .blood-group,
+.donor-card .blood-group-badge,
 .blood-group-badge {
   display: inline-flex;
   align-items: center;
@@ -590,6 +652,96 @@ legend {
   border-radius: 999px;
 
   font-weight: 800;
+}
+
+.donor-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.donor-card-actions a {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 13px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.donor-card-actions a:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+/* ---------- Live notifications ---------- */
+
+.notification-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.notification-item {
+  padding: 18px 20px;
+
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-left: 5px solid var(--danger);
+  border-radius: 12px;
+}
+
+.notification-item header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.notification-item h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.notification-time {
+  color: var(--text-light);
+  font-size: 0.82rem;
+}
+
+.notification-item p {
+  margin: 4px 0;
+  font-size: 0.93rem;
+}
+
+.notification-contact {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.notification-contact small {
+  font-weight: 400;
+  color: var(--text-light);
+}
+
+.notification-empty {
+  padding: 22px;
+  color: var(--text-light);
+  text-align: center;
+
+  background: #ffffff;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+
+@media (max-width: 640px) {
+  .notification-item {
+    padding: 15px 16px;
+  }
 }
 
 /* ---------- Tables ---------- */

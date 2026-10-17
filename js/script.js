@@ -2,7 +2,7 @@
 // Keep the Apps Script URL in sync with the deployed Google Apps Script web app.
 
 const APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/AKfycbxGgfbNHZeMk_5RDA411pJ6ezYMSuGNmfgrX452ie73lnZND7Hhsh-eL9RtQZ73ybx6/exec";
+  "https://script.google.com/macros/s/AKfycbwExlMBAGM9PrCtF8-gtuKSHhBoO_yiIQu-awFa-kMORe0t2fOs_gxatIaQouH-dp8P/exec";
 
 // ---------- API helpers ----------
 
@@ -99,7 +99,60 @@ async function submitEmergencyToBackend(requestData) {
   }
 }
 
+async function withdrawConsentFromBackend(phone) {
+  try {
+    return await requestJson(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        action: "withdrawConsent",
+        phone: normalizePhoneInput(phone)
+      })
+    });
+  } catch (error) {
+    console.error("Withdraw consent error:", error);
+
+    return {
+      success: false,
+      error: "Network or server error"
+    };
+  }
+}
+
+// Returns null (not []) on failure so callers can tell "backend down"
+// apart from "there is genuinely nothing to show".
+async function fetchNotificationsFromBackend() {
+  try {
+    const data = await requestJson(
+      `${APPS_SCRIPT_URL}?action=getNotifications`
+    );
+
+    if (!data || data.success !== true) {
+      throw new Error(
+        (data && data.error) || "Unexpected response shape."
+      );
+    }
+
+    return Array.isArray(data.notifications)
+      ? data.notifications
+      : [];
+
+  } catch (error) {
+    console.error("Fetch notifications error:", error);
+
+    return null;
+  }
+}
+
 // ---------- Validation and UI helpers ----------
+
+// These limits mirror the server-side rules in Code.gs on purpose.
+// Keep both files in sync or users will hit unexplained rejections.
+const NAME_MAX = 80;
+const LOCATION_MAX = 200;
+const MESSAGE_MAX = 1000;
 
 function formatName(value) {
   return String(value || "")
@@ -123,6 +176,20 @@ function validateName(name) {
     };
   }
 
+  if (value.length < 2) {
+    return {
+      valid: false,
+      msg: "Name must be at least 2 characters."
+    };
+  }
+
+  if (value.length > NAME_MAX) {
+    return {
+      valid: false,
+      msg: `Name must be ${NAME_MAX} characters or fewer.`
+    };
+  }
+
   if (!/^[a-zA-Z ]+$/.test(value)) {
     return {
       valid: false,
@@ -134,6 +201,62 @@ function validateName(name) {
     valid: true,
     msg: ""
   };
+}
+
+function validateLocation(location) {
+  const value = String(location || "").trim();
+
+  if (!value) {
+    return {
+      valid: false,
+      msg: "Location is required."
+    };
+  }
+
+  if (value.length > LOCATION_MAX) {
+    return {
+      valid: false,
+      msg: `Location must be ${LOCATION_MAX} characters or fewer.`
+    };
+  }
+
+  return {
+    valid: true,
+    msg: ""
+  };
+}
+
+// Accepts what people actually paste: "98765 43210", "+91 98765 43210",
+// "(98765) 43210". The server only ever receives a bare 10-digit number.
+function normalizePhoneInput(phone) {
+  let digits = String(phone || "").replace(/\D/g, "");
+
+  if (digits.length > 10 && digits.slice(0, 2) === "91") {
+    digits = digits.slice(2);
+  }
+
+  return digits.slice(0, 10);
+}
+
+// Rewrites a field in place while keeping the caret where the user left it.
+// Without this, reformatting on every keystroke throws the caret to the end.
+function applyFormatKeepingCaret(input, formatted) {
+  const caret = input.selectionStart;
+
+  if (input.value === formatted) return;
+
+  const delta = formatted.length - input.value.length;
+
+  input.value = formatted;
+
+  if (caret == null) return;
+
+  const next = Math.min(
+    Math.max(caret + delta, 0),
+    formatted.length
+  );
+
+  input.setSelectionRange(next, next);
 }
 
 function validateAge(age) {
@@ -160,7 +283,7 @@ function validateAge(age) {
 }
 
 function validatePhone(phone) {
-  const value = String(phone || "").replace(/\D/g, "");
+  const value = normalizePhoneInput(phone);
 
   if (!value) {
     return {
@@ -205,21 +328,25 @@ function validateEmail(email, consent) {
   };
 }
 
+// Toggles modifier classes instead of replacing className, so the
+// page-specific base class on the element survives every update.
 function setFieldMsg(element, valid, text) {
   if (!element) return;
 
   element.textContent = text || "";
-  element.className =
-    `field-msg ${valid ? "valid" : "invalid"}`;
+  element.classList.remove("valid", "invalid");
+  element.classList.add(valid ? "valid" : "invalid");
 }
 
 function setStatus(element, text, type = "") {
   if (!element) return;
 
   element.textContent = text;
-  element.className = type
-    ? `results-message ${type}`
-    : "results-message";
+  element.classList.remove("error", "success");
+
+  if (type === "error" || type === "success") {
+    element.classList.add(type);
+  }
 }
 
 function getCheckedBloodGroup(form) {
@@ -274,6 +401,7 @@ async function initFindDonor() {
   const stateInput = document.getElementById("state");
   const districtInput = document.getElementById("district");
   const message = document.getElementById("results-message");
+  const grid = document.getElementById("donors-grid");
 
   if (
     !form ||
@@ -285,13 +413,31 @@ async function initFindDonor() {
   }
 
   populateStateDropdown(stateInput);
-  setupDistrictDependent(stateInput, districtInput);
 
+  const refreshDistricts = setupDistrictDependent(
+    stateInput,
+    districtInput
+  );
+
+  // Remembers the unfiltered listing so "Clear Filters" can restore it
+  // without spending another backend call.
+  let fullListing = [];
+
+  function setGridBusy(busy) {
+    if (grid) {
+      grid.setAttribute("aria-busy", busy ? "true" : "false");
+    }
+  }
+
+  setGridBusy(true);
   setStatus(message, "Loading donor listings...");
 
   const donors = await fetchDonorsFromBackend();
 
   if (donors === null) {
+    fullListing = [];
+    setGridBusy(false);
+
     displayDonors([]);
 
     setStatus(
@@ -300,14 +446,23 @@ async function initFindDonor() {
       "error"
     );
 
-  }
-  else {
+  } else {
+    fullListing = donors;
+    setGridBusy(false);
+
     displayDonors(donors);
   }
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    const restoreButton = setButtonBusy(
+      form,
+      true,
+      "Searching..."
+    );
+
+    setGridBusy(true);
     setStatus(message, "Searching for donors...");
 
     const results = await searchDonorsFromBackend(
@@ -316,11 +471,8 @@ async function initFindDonor() {
       districtInput.value
     );
 
-    setFieldMsg(
-      emailMessage,
-      emailCheck.valid,
-      emailCheck.msg
-    );
+    setGridBusy(false);
+    restoreButton();
 
     if (results === null) {
       displayDonors([]);
@@ -335,6 +487,26 @@ async function initFindDonor() {
     }
 
     displayDonors(results);
+  });
+
+  // A native reset restores the select boxes but never fires "change",
+  // so the district list has to be rebuilt by hand.
+  form.addEventListener("reset", () => {
+    setTimeout(() => {
+      refreshDistricts();
+
+      setStatus(
+        message,
+        fullListing.length > 0
+          ? `Filters cleared. Showing all ${fullListing.length} donor(s).`
+          : "Filters cleared.",
+        fullListing.length > 0 ? "success" : ""
+      );
+
+      if (fullListing.length > 0) {
+        displayDonors(fullListing);
+      }
+    }, 0);
   });
 }
 
@@ -372,20 +544,14 @@ function initRegister() {
   }
 
   populateStateDropdown(stateInput);
-  setupDistrictDependent(stateInput, districtInput);
+
+  const refreshDistricts = setupDistrictDependent(
+    stateInput,
+    districtInput
+  );
 
   nameInput.addEventListener("input", () => {
-    const cursorAtEnd =
-      nameInput.selectionStart === nameInput.value.length;
-
-    nameInput.value = formatName(nameInput.value);
-
-    if (cursorAtEnd) {
-      nameInput.setSelectionRange(
-        nameInput.value.length,
-        nameInput.value.length
-      );
-    }
+    applyFormatKeepingCaret(nameInput, formatName(nameInput.value));
 
     const result = validateName(nameInput.value);
 
@@ -407,9 +573,7 @@ function initRegister() {
   });
 
   phoneInput.addEventListener("input", () => {
-    phoneInput.value = phoneInput.value
-      .replace(/\D/g, "")
-      .slice(0, 10);
+    phoneInput.value = normalizePhoneInput(phoneInput.value);
 
     const result = validatePhone(phoneInput.value);
 
@@ -466,7 +630,20 @@ function initRegister() {
     const bloodGroup = getCheckedBloodGroup(form);
     const state = stateInput.value;
     const district = districtInput.value;
-    const phone = phoneInput.value.replace(/\D/g, "");
+    const phone = normalizePhoneInput(phoneInput.value);
+
+    // Bots fill every field they can find; people never see this one.
+    const honeypot = document.getElementById("hp-field");
+
+    if (honeypot && honeypot.value) {
+      setStatus(
+        message,
+        "Registration failed. Please try again.",
+        "error"
+      );
+
+      return;
+    }
 
     const nameCheck = validateName(name);
     const ageCheck = validateAge(age);
@@ -573,54 +750,26 @@ function initRegister() {
 
         form.reset();
 
-        setFieldMsg(
-          document.getElementById("donor-name-msg"),
-          true,
-          ""
-        );
+        [
+          "donor-name-msg",
+          "donor-age-msg",
+          "donor-phone-msg",
+          "donor-blood-msg",
+          "donor-state-msg",
+          "donor-district-msg"
+        ].forEach((id) => {
+          setFieldMsg(document.getElementById(id), true, "");
+        });
 
-        setFieldMsg(
-          document.getElementById("donor-age-msg"),
-          true,
-          ""
-        );
+        // form.reset() does not fire "change", so the district list is
+        // rebuilt explicitly.
+        refreshDistricts();
 
-        setFieldMsg(
-          document.getElementById("donor-phone-msg"),
-          true,
-          ""
-        );
-
-        setFieldMsg(
-          document.getElementById("donor-blood-msg"),
-          true,
-          ""
-        );
-
-        setFieldMsg(
-          document.getElementById("donor-state-msg"),
-          true,
-          ""
-        );
-
-        setFieldMsg(
-          document.getElementById("donor-district-msg"),
-          true,
-          ""
-        );
-
-        districtInput.replaceChildren();
-
-        const placeholder = document.createElement("option");
-        placeholder.value = "";
-        placeholder.textContent = "Select a state first";
-
-        districtInput.appendChild(placeholder);
-        districtInput.disabled = true;
       } else {
         setStatus(
           message,
-          "Registration failed. Please try again.",
+          (result && result.error) ||
+            "Registration failed. Please try again.",
           "error"
         );
       }
@@ -650,6 +799,9 @@ function initEmergency() {
   const phoneInput = document.getElementById("emergency-phone");
   const locationInput =
     document.getElementById("emergency-location");
+  const stateInput = document.getElementById("emergency-state");
+  const districtInput =
+    document.getElementById("emergency-district");
 
   if (!nameInput || !phoneInput || !locationInput) {
     console.error(
@@ -659,8 +811,28 @@ function initEmergency() {
     return;
   }
 
+  const detailsInput = document.getElementById(
+    "emergency-message-details"
+  );
+
+  if (detailsInput) {
+    // Keep the markup and the shared limit from drifting apart.
+    detailsInput.maxLength = MESSAGE_MAX;
+  }
+
+  let refreshDistricts = null;
+
+  if (stateInput && districtInput) {
+    populateStateDropdown(stateInput);
+
+    refreshDistricts = setupDistrictDependent(
+      stateInput,
+      districtInput
+    );
+  }
+
   nameInput.addEventListener("input", () => {
-    nameInput.value = formatName(nameInput.value);
+    applyFormatKeepingCaret(nameInput, formatName(nameInput.value));
 
     const result = validateName(nameInput.value);
 
@@ -672,9 +844,7 @@ function initEmergency() {
   });
 
   phoneInput.addEventListener("input", () => {
-    phoneInput.value = phoneInput.value
-      .replace(/\D/g, "")
-      .slice(0, 10);
+    phoneInput.value = normalizePhoneInput(phoneInput.value);
 
     const result = validatePhone(phoneInput.value);
 
@@ -686,14 +856,44 @@ function initEmergency() {
   });
 
   locationInput.addEventListener("input", () => {
-    const valid = Boolean(locationInput.value.trim());
+    const result = validateLocation(locationInput.value);
 
     setFieldMsg(
       document.getElementById("emergency-location-msg"),
-      valid,
-      valid ? "" : "Location is required."
+      result.valid,
+      result.msg
     );
   });
+
+  if (stateInput) {
+    stateInput.addEventListener("change", () => {
+      const valid = Boolean(stateInput.value);
+
+      setFieldMsg(
+        document.getElementById("emergency-state-msg"),
+        valid,
+        valid ? "" : "Select a state."
+      );
+
+      setFieldMsg(
+        document.getElementById("emergency-district-msg"),
+        false,
+        ""
+      );
+    });
+  }
+
+  if (districtInput) {
+    districtInput.addEventListener("change", () => {
+      const valid = Boolean(districtInput.value);
+
+      setFieldMsg(
+        document.getElementById("emergency-district-msg"),
+        valid,
+        valid ? "" : "Select a district."
+      );
+    });
+  }
 
   form
     .querySelectorAll('input[name="bloodGroup"]')
@@ -713,18 +913,28 @@ function initEmergency() {
     const patientName = nameInput.value.trim();
     const bloodGroup = getCheckedBloodGroup(form);
     const location = locationInput.value.trim();
-    const phone = phoneInput.value.replace(/\D/g, "");
+    const phone = normalizePhoneInput(phoneInput.value);
+    const state = stateInput ? stateInput.value : "";
+    const district = districtInput ? districtInput.value : "";
 
-    const detailsInput = document.getElementById(
-      "emergency-message-details"
-    );
+    // Bots fill every field they can find; people never see this one.
+    const honeypot = document.getElementById("hp-field");
+
+    if (honeypot && honeypot.value) {
+      setStatus(
+        message,
+        "Request submission failed. Please try again.",
+        "error"
+      );
+
+      return;
+    }
 
     const nameCheck = validateName(patientName);
     const phoneCheck = validatePhone(phone);
-
+    const locationCheck = validateLocation(location);
 
     const bloodOk = Boolean(bloodGroup);
-    const locationOk = Boolean(location);
 
     setFieldMsg(
       document.getElementById("patient-name-msg"),
@@ -746,8 +956,8 @@ function initEmergency() {
 
     setFieldMsg(
       document.getElementById("emergency-location-msg"),
-      locationOk,
-      locationOk ? "" : "Location is required."
+      locationCheck.valid,
+      locationCheck.msg
     );
 
     if (
@@ -755,7 +965,7 @@ function initEmergency() {
         nameCheck.valid &&
         phoneCheck.valid &&
         bloodOk &&
-        locationOk
+        locationCheck.valid
       )
     ) {
       setStatus(
@@ -781,6 +991,8 @@ function initEmergency() {
         bloodGroup,
         location,
         phone,
+        state,
+        district,
         message: detailsInput
           ? detailsInput.value.trim()
           : ""
@@ -794,10 +1006,26 @@ function initEmergency() {
         );
 
         form.reset();
+
+        if (refreshDistricts) {
+          refreshDistricts();
+        }
+
+        [
+          "patient-name-msg",
+          "emergency-phone-msg",
+          "emergency-blood-msg",
+          "emergency-location-msg",
+          "emergency-state-msg",
+          "emergency-district-msg"
+        ].forEach((id) => {
+          setFieldMsg(document.getElementById(id), true, "");
+        });
       } else {
         setStatus(
           message,
-          "Request submission failed. Please try again.",
+          (result && result.error) ||
+            "Request submission failed. Please try again.",
           "error"
         );
       }
@@ -807,6 +1035,101 @@ function initEmergency() {
       setStatus(
         message,
         "Request submission failed. Please try again.",
+        "error"
+      );
+    } finally {
+      restoreButton();
+    }
+  });
+}
+
+// ---------- Consent withdrawal ----------
+
+function initWithdrawConsent() {
+  const form = document.getElementById("withdraw-form");
+
+  if (!form) return;
+
+  const phoneInput = document.getElementById("withdraw-phone");
+  const message = document.getElementById("withdraw-message");
+
+  if (!phoneInput) return;
+
+  phoneInput.addEventListener("input", () => {
+    phoneInput.value = normalizePhoneInput(phoneInput.value);
+
+    const result = validatePhone(phoneInput.value);
+
+    setFieldMsg(
+      document.getElementById("withdraw-phone-msg"),
+      result.valid,
+      result.msg
+    );
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const phone = normalizePhoneInput(phoneInput.value);
+    const check = validatePhone(phone);
+
+    setFieldMsg(
+      document.getElementById("withdraw-phone-msg"),
+      check.valid,
+      check.msg
+    );
+
+    if (!check.valid) {
+      setStatus(
+        message,
+        "Enter the mobile number you registered with.",
+        "error"
+      );
+
+      return;
+    }
+
+    const restoreButton = setButtonBusy(
+      form,
+      true,
+      "Updating..."
+    );
+
+    setStatus(message, "Withdrawing consent...");
+
+    try {
+      const result = await withdrawConsentFromBackend(phone);
+
+      if (result && result.success) {
+        setStatus(
+          message,
+          result.message ||
+            "Email alert consent has been withdrawn.",
+          "success"
+        );
+
+        form.reset();
+
+        setFieldMsg(
+          document.getElementById("withdraw-phone-msg"),
+          true,
+          ""
+        );
+
+      } else {
+        setStatus(
+          message,
+          (result && result.error) ||
+            "Could not withdraw consent. Please try again.",
+          "error"
+        );
+      }
+    } catch (error) {
+      console.error("Withdraw consent error:", error);
+
+      setStatus(
+        message,
+        "Could not withdraw consent. Please try again.",
         "error"
       );
     } finally {
@@ -863,19 +1186,14 @@ function displayDonors(donors) {
     const card = document.createElement("article");
     card.className = "donor-card";
 
-    const heading = document.createElement("h4");
+    const heading = document.createElement("h3");
     heading.textContent = String(donor.name || "Donor");
 
-    const blood = document.createElement("p");
-    blood.className = "detail";
-    blood.append("Blood Group: ");
-
-    const bloodStrong = document.createElement("strong");
-    bloodStrong.textContent = String(
+    const blood = document.createElement("span");
+    blood.className = "blood-group-badge";
+    blood.textContent = String(
       donor.bloodGroup || "Not provided"
     );
-
-    blood.appendChild(bloodStrong);
 
     const age = document.createElement("p");
     age.className = "detail";
@@ -887,13 +1205,204 @@ function displayDonors(donors) {
       `District: ${String(donor.district || "Not provided")}, ` +
       `${String(donor.state || "Not provided")}`;
 
-    const phone = document.createElement("p");
-    phone.className = "detail";
-    phone.textContent =
-      `Phone: +91 ${String(donor.phone || "Not provided")}`;
+    card.append(heading, blood, age, location);
 
-    card.append(heading, blood, age, location, phone);
+    const phone = String(donor.phone || "");
+
+    if (/^[6-9]\d{9}$/.test(phone)) {
+      const actions = document.createElement("div");
+      actions.className = "donor-card-actions";
+
+      const call = document.createElement("a");
+      call.href = `tel:+91${phone}`;
+      call.textContent = "Call";
+      call.setAttribute(
+        "aria-label",
+        `Call ${String(donor.name || "this donor")}`
+      );
+
+      const whatsapp = document.createElement("a");
+      whatsapp.href =
+        `https://wa.me/91${phone}` +
+        `?text=${encodeURIComponent(
+          "Hi, I found your contact in the Blood Donor Finder " +
+          "directory and would like to discuss a blood donation."
+        )}`;
+      whatsapp.textContent = "WhatsApp";
+      whatsapp.setAttribute("target", "_blank");
+      whatsapp.setAttribute("rel", "noopener noreferrer");
+      whatsapp.setAttribute(
+        "aria-label",
+        `Message ${String(donor.name || "this donor")} on WhatsApp`
+      );
+
+      actions.append(call, whatsapp);
+      card.appendChild(actions);
+
+    } else {
+      const noPhone = document.createElement("p");
+      noPhone.className = "detail";
+      noPhone.textContent = "Phone: Not provided";
+
+      card.appendChild(noPhone);
+    }
+
     grid.appendChild(card);
+  });
+}
+
+// ---------- Notifications ----------
+
+function formatRelativeTime(isoString) {
+  const then = new Date(isoString);
+
+  if (Number.isNaN(then.getTime())) return "";
+
+  const seconds = Math.round(
+    (Date.now() - then.getTime()) / 1000
+  );
+
+  if (seconds < 60) return "just now";
+
+  const minutes = Math.round(seconds / 60);
+
+  if (minutes < 60) {
+    return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+  }
+
+  const hours = Math.round(minutes / 60);
+
+  if (hours < 24) {
+    return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  }
+
+  const days = Math.round(hours / 24);
+
+  return `${days} day${days === 1 ? "" : "s"} ago`;
+}
+
+function displayNotifications(list) {
+  const container =
+    document.getElementById("notifications-list");
+
+  if (!container) return;
+
+  container.replaceChildren();
+
+  if (!Array.isArray(list) || list.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "notification-empty";
+    empty.textContent =
+      "No active blood requests right now.";
+
+    container.appendChild(empty);
+
+    return;
+  }
+
+  list.forEach((item) => {
+    const article = document.createElement("article");
+    article.className = "notification-item";
+
+    const header = document.createElement("header");
+
+    const heading = document.createElement("h3");
+    heading.textContent = `${String(item.bloodGroup || "Unknown")} blood needed`;
+
+    const time = document.createElement("time");
+    time.className = "notification-time";
+    time.dateTime = String(item.createdAt || "");
+    time.textContent = formatRelativeTime(item.createdAt);
+
+    header.append(heading, time);
+
+    const location = document.createElement("p");
+    location.textContent = `Location: ${String(item.location || "Not provided")}`;
+
+    article.append(header, location);
+
+    const contact = String(item.contact || "").trim();
+
+    if (contact) {
+      const contactLine = document.createElement("p");
+      contactLine.className = "notification-contact";
+      contactLine.textContent = `Contact: ${contact}`;
+
+      const note = document.createElement("small");
+      note.textContent =
+        " (partial number — consenting donors receive the full number by email)";
+
+      contactLine.appendChild(note);
+
+      article.appendChild(contactLine);
+    }
+
+    const message = String(item.message || "").trim();
+
+    if (message) {
+      const detail = document.createElement("p");
+      detail.textContent = message;
+
+      article.appendChild(detail);
+    }
+
+    container.appendChild(article);
+  });
+}
+
+function initNotifications() {
+  const container =
+    document.getElementById("notifications-list");
+
+  if (!container) return;
+
+  const status =
+    document.getElementById("notifications-message");
+
+  let refreshTimer = null;
+
+  async function load() {
+    container.setAttribute("aria-busy", "true");
+
+    const list = await fetchNotificationsFromBackend();
+
+    container.setAttribute("aria-busy", "false");
+
+    if (list === null) {
+      setStatus(
+        status,
+        "Live requests could not be loaded. Please refresh to try again.",
+        "error"
+      );
+
+      // Keep polling; the outage is probably transient.
+      return;
+    }
+
+    displayNotifications(list);
+
+    setStatus(
+      status,
+      list.length > 0
+        ? `Showing the ${list.length} most recent request(s).`
+        : "",
+      "success"
+    );
+  }
+
+  setStatus(status, "Loading recent blood requests...");
+
+  load();
+
+  // Poll while the tab is visible so background tabs stay cheap.
+  refreshTimer = setInterval(() => {
+    if (document.visibilityState !== "hidden") {
+      load();
+    }
+  }, 60000);
+
+  window.addEventListener("pagehide", () => {
+    if (refreshTimer) clearInterval(refreshTimer);
   });
 }
 
@@ -1795,21 +2304,23 @@ const stateDistricts = {
 
 // ---------- State and district dropdowns ----------
 
-function populateStateDropdown(selectEl) {
+// placeholderText: explicit label for the empty option. When omitted the
+// label already present on the element is reused, which keeps the
+// find-donor "All states" wording intact.
+function populateStateDropdown(selectEl, placeholderText) {
   if (!selectEl) return;
 
-  const placeholderText =
-    selectEl.options.length > 0
-      ? selectEl.options[0].textContent
-      : selectEl.id === "state"
-        ? "All states"
-        : "Select a state";
+  const existing = selectEl.options.length > 0
+    ? selectEl.options[0].textContent
+    : "";
+
+  const label = placeholderText || existing || "Select a state";
 
   selectEl.replaceChildren();
 
   const placeholder = document.createElement("option");
   placeholder.value = "";
-  placeholder.textContent = placeholderText;
+  placeholder.textContent = label;
 
   selectEl.appendChild(placeholder);
 
@@ -1866,6 +2377,8 @@ function setupDistrictDependent(stateSelect, districtSelect) {
   stateSelect.addEventListener("change", populateDistricts);
 
   populateDistricts();
+
+  return populateDistricts;
 }
 
 // ---------- Initialize the correct page ----------
@@ -1875,10 +2388,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (page === "find-donor") {
     initFindDonor();
+    initNotifications();
+  }
+
+  if (page === "home") {
+    initNotifications();
   }
 
   if (page === "register") {
     initRegister();
+    initWithdrawConsent();
   }
 
   if (page === "emergency") {

@@ -136,23 +136,8 @@
             border-radius: 0 10px 10px 0;
         }
 
-        .field-msg {
-            display: block;
-            min-height: 0;
-            color: var(--danger);
-            font-size: 0.85rem;
-            overflow-wrap: anywhere;
-        }
+    .registration-note {
 
-        .field-msg:empty {
-            display: none;
-        }
-
-        .field-msg:not(:empty) {
-            margin-top: 4px;
-        }
-
-        .registration-note {
             margin: 24px 0;
             padding: 16px 18px;
             background: #fff7ed;
@@ -171,16 +156,36 @@
             font-size: 0.9rem;
         }
 
-        .registration-submit {
-            width: 100%;
-            margin-top: 8px;
-        }
+    .registration-submit {
+        width: 100%;
+        margin-top: 8px;
+    }
 
-        .registration-message {
-            overflow-wrap: anywhere;
-        }
+    .withdraw-panel {
+        margin-top: 26px;
+        padding: 18px 20px;
 
-        .registration-benefits {
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+    }
+
+    .withdraw-panel h3 {
+        margin-bottom: 6px;
+        font-size: 1rem;
+    }
+
+    .withdraw-panel>p {
+        margin-bottom: 14px;
+        font-size: 0.9rem;
+    }
+
+    .withdraw-panel button {
+        margin-top: 14px;
+    }
+
+    .registration-benefits {
+
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 16px;
@@ -320,7 +325,7 @@
                             </label>
 
                             <input type="text" id="donor-name" name="name" placeholder="Enter your full name"
-                                autocomplete="name" minlength="2" maxlength="100" required>
+                                autocomplete="name" minlength="2" maxlength="80" required>
 
                             <span id="donor-name-msg" class="field-msg" aria-live="polite"></span>
 
@@ -478,9 +483,9 @@
                     </div>
 
                     <!-- Email notifications -->
-                    <!-- <h3 class="registration-section-title">
+                    <h3 class="registration-section-title">
                         Email notifications
-                    </h3> -->
+                    </h3>
 
                     <div class="form-group">
                         <label for="donor-email">
@@ -501,11 +506,17 @@
                             <span>
                                 I agree to receive email alerts about emergency blood
                                 requests matching my blood group and location.
-                                I understand that I can withdraw my consent later.
+                                I understand that I can withdraw my consent later
+                                using the form below.
                             </span>
                         </label>
                     </div>
-                
+
+                    <!-- Spam trap: hidden from people, filled in by bots. -->
+                    <div class="hp-field" aria-hidden="true">
+                        <label for="hp-field">Leave this field empty</label>
+                        <input type="text" id="hp-field" name="hpField" tabindex="-1" autocomplete="off">
+                    </div>
 
                     <!-- Privacy and eligibility note -->
                     <aside class="registration-note" aria-labelledby="registration-note-title">
@@ -538,10 +549,54 @@
                         Register as a Donor →
                     </button>
 
-                    <p id="register-message" class="form-message registration-message" role="status" aria-live="polite"
+                    <p id="register-message" class="form-message" role="status" aria-live="polite"
                         aria-atomic="true"></p>
 
                 </form>
+
+                <!-- Consent withdrawal. Kept outside #register-form
+                     because nested forms are invalid HTML and the
+                     browser would silently close the outer one. -->
+                <section class="withdraw-panel" aria-labelledby="withdraw-title">
+
+                    <h3 id="withdraw-title">
+                        Withdraw email consent
+                    </h3>
+
+                    <p>
+                        Already registered and no longer want emergency
+                        alerts? Enter the mobile number you used and your
+                        consent will be turned off. Your directory entry
+                        stays exactly as it is.
+                    </p>
+
+                    <form id="withdraw-form" autocomplete="off">
+
+                        <div class="phone-input-group">
+
+                            <span class="phone-prefix" aria-hidden="true">
+                                +91
+                            </span>
+
+                            <input type="tel" id="withdraw-phone" name="withdrawPhone"
+                                placeholder="10-digit mobile number" inputmode="numeric"
+                                pattern="[6-9][0-9]{9}" minlength="10" maxlength="10"
+                                aria-describedby="withdraw-phone-msg">
+
+                        </div>
+
+                        <span id="withdraw-phone-msg" class="field-msg" aria-live="polite"></span>
+
+                        <button type="submit" class="btn btn-secondary">
+                            Withdraw consent
+                        </button>
+
+                        <p id="withdraw-message" class="form-message" role="status" aria-live="polite"
+                            aria-atomic="true"></p>
+
+                    </form>
+
+                </section>
 
             </div>
 

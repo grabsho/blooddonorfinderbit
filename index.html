@@ -136,6 +136,54 @@
 
         </section>
 
+        <!-- Recent emergency requests -->
+        <section
+            class="search-section"
+            aria-labelledby="home-notifications-title"
+        >
+
+            <h2 id="home-notifications-title">
+                Recent blood requests
+            </h2>
+
+            <p class="form-intro">
+                Live requests submitted through this website, newest first.
+                Contact numbers are shown partially here. Donors who
+                consented to email alerts receive the full number and can
+                call the requester directly.
+            </p>
+
+            <p
+                id="notifications-message"
+                class="results-message"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+            >
+                Loading recent blood requests...
+            </p>
+
+            <div
+                id="notifications-list"
+                class="notification-list"
+                aria-live="polite"
+                aria-busy="true"
+            >
+                <!-- Notification cards are rendered by js/script.js -->
+            </div>
+
+            <div class="hero-buttons" style="margin-top: 22px;">
+                <a href="find-donor.html" class="btn btn-primary">
+                    Search the directory →
+                </a>
+
+                <a href="emergency.html" class="btn btn-danger">
+                    Submit a request
+                </a>
+            </div>
+
+        </section>
+
         <!-- How it works -->
         <section
             class="stats"
