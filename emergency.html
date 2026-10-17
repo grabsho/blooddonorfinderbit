@@ -1,81 +1,537 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Donor Finder - Emergency Request</title>
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#8f1738">
+  <meta name="description"
+    content="Submit a blood request through Blood Donor Finder with the required blood group, hospital or location, and contact details.">
+
+  <title>Blood Request | Blood Donor Finder</title>
+
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/script.js" defer></script>
+
+  <style>
+    /* Emergency request page */
+
+    .emergency-intro {
+      width: min(100% - 40px, 900px);
+      margin: 36px auto 0;
+    }
+
+    .emergency-eyebrow {
+      margin-bottom: 12px;
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+
+    .emergency-intro h1 {
+      max-width: 760px;
+      margin-bottom: 16px;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+    }
+
+    .emergency-intro>p:last-child {
+      max-width: 700px;
+      font-size: 1.05rem;
+    }
+
+    .emergency-layout {
+      width: min(100% - 40px, 900px);
+      margin: 28px auto 56px;
+    }
+
+    .emergency-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 22px;
+      padding: 20px;
+
+      background: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-left: 5px solid #c2410c;
+      border-radius: 14px;
+    }
+
+    .emergency-alert-icon {
+      flex: 0 0 auto;
+      font-size: 1.5rem;
+      line-height: 1.4;
+    }
+
+    .emergency-alert h2 {
+      margin-bottom: 6px;
+      color: #9a3412;
+      font-size: 1.05rem;
+      letter-spacing: 0;
+    }
+
+    .emergency-alert p {
+      color: #7c2d12;
+      font-size: 0.93rem;
+    }
+
+    .emergency-panel {
+      padding: clamp(22px, 4vw, 38px);
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .emergency-panel h2 {
+      margin-bottom: 8px;
+      font-size: 1.65rem;
+    }
+
+    .emergency-section-title {
+      margin: 30px 0 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+    }
+
+    .emergency-radio-group {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .emergency-radio-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 48px;
+      padding: 11px 13px;
+
+      color: var(--text);
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .emergency-radio-label:has(input:checked) {
+      color: var(--primary);
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    .emergency-radio-label input {
+      flex: 0 0 auto;
+      margin: 0;
+    }
+
+    .emergency-phone-group {
+      display: flex;
+      width: 100%;
+      align-items: stretch;
+    }
+
+    .emergency-phone-prefix {
+      display: flex;
+      flex: 0 0 62px;
+      align-items: center;
+      justify-content: center;
+
+      color: var(--text);
+      background: #f1f3f8;
+      border: 1px solid #d9deea;
+      border-right: 0;
+      border-radius: 10px 0 0 10px;
+      font-weight: 700;
+    }
+
+    .emergency-phone-group input {
+      min-width: 0;
+      border-radius: 0 10px 10px 0;
+    }
+
+    .emergency-submit {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .emergency-field-message {
+      display: block;
+      color: var(--danger);
+      font-size: 0.85rem;
+      overflow-wrap: anywhere;
+    }
+
+    .emergency-field-message:empty {
+      display: none;
+    }
+
+    .emergency-field-message:not(:empty) {
+      margin-top: 4px;
+    }
+
+    .emergency-privacy-note {
+      margin: 24px 0;
+      padding: 16px 18px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .emergency-privacy-note h3 {
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    .emergency-privacy-note p {
+      font-size: 0.9rem;
+    }
+
+    .emergency-message-output {
+      overflow-wrap: anywhere;
+    }
+
+    @media (max-width: 640px) {
+
+      .emergency-intro,
+      .emergency-layout {
+        width: calc(100% - 28px);
+      }
+
+      .emergency-intro {
+        margin-top: 26px;
+      }
+
+      .emergency-layout {
+        margin-top: 20px;
+        margin-bottom: 32px;
+      }
+
+      .emergency-panel {
+        padding: 20px 16px;
+        border-radius: 16px;
+      }
+
+      .emergency-alert {
+        padding: 16px;
+      }
+
+      .emergency-radio-group {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+      }
+
+      .emergency-radio-label {
+        padding: 10px;
+      }
+    }
+  </style>
 </head>
+
 <body data-page="emergency">
-    <header>
-        <nav class="navbar">
-            <div class="logo">Blood Donor Finder</div>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="find-donor.html">Find Donor</a></li>
-                <li><a href="register.html">Register</a></li>
-                <li><a href="emergency.html">Emergency</a></li>
-                <li><a href="about.html">About</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <main>
-  <section class="form-section">
-    <h2>Emergency Blood Request</h2>
-    <p class="form-intro">Urgent requirement? Submit details below. We'll notify matching donors immediately.</p>
-    
-    <form id="emergency-form" class="emergency-form">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="patient-name">Patient Name *</label>
-          <input type="text" id="patient-name" name="patientName" placeholder="Patient's full name" required>
-          <span id="patient-name-msg" class="field-msg"></span>
+  <!-- Navigation -->
+  <header>
+    <nav class="navbar" aria-label="Main navigation">
+
+      <a href="index.html" class="logo" aria-label="Blood Donor Finder home">
+        🩸 Blood Donor Finder
+      </a>
+
+      <ul class="nav-links">
+        <li>
+          <a href="index.html">Home</a>
+        </li>
+        <li>
+          <a href="find-donor.html">Find Donor</a>
+        </li>
+        <li>
+          <a href="register.html">Become a Donor</a>
+        </li>
+        <li>
+          <a href="emergency.html" aria-current="page">
+            Blood Request
+          </a>
+        </li>
+        <li>
+          <a href="about.html">About Project</a>
+        </li>
+      </ul>
+
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <!-- Page introduction -->
+    <section class="emergency-intro">
+
+      <p class="emergency-eyebrow">
+        BLOOD REQUEST SUPPORT
+      </p>
+
+      <h1>Request a blood donor.</h1>
+
+      <p>
+        Share the required blood group, hospital or
+        location, and contact information to help
+        coordinate a search for a potential donor.
+      </p>
+
+    </section>
+
+    <section class="emergency-layout">
+
+      <!-- Medical emergency notice -->
+      <aside class="emergency-alert" aria-labelledby="urgent-notice-title">
+
+        <span class="emergency-alert-icon" aria-hidden="true">
+          ⚠️
+        </span>
+
+        <div>
+          <h2 id="urgent-notice-title">
+            Is this a medical emergency?
+          </h2>
+
+          <p>
+            Contact local emergency services or
+            the nearest appropriate hospital
+            immediately. Do not wait for a website
+            response or donor-directory result.
+          </p>
         </div>
-        <div class="form-group">
-          <label>Required Blood Group *</label>
-          <div class="radio-group">
-            <label class="radio-label"><input type="radio" name="bloodGroup" value="A+"> A+</label>
-            <label class="radio-label"><input type="radio" name="bloodGroup" value="A-"> A-</label>
-            <label class="radio-label"><input type="radio" name="bloodGroup" value="B+"> B+</label>
-            <label class="radio-label"><input type="radio" name="bloodGroup" value="B-"> B-</label>
-            <label class="radio-label"><input type="radio" name="bloodGroup" value="AB+"> AB+</label>
-            <label class="radio-label"><input type="radio" name="bloodGroup" value="AB-"> AB-</label>
-            <label class="radio-label"><input type="radio" name="bloodGroup" value="O+"> O+</label>
-            <label class="radio-label"><input type="radio" name="bloodGroup" value="O-"> O-</label>
+
+      </aside>
+
+      <!-- Request form -->
+      <div class="emergency-panel">
+
+        <h2>Blood request details</h2>
+
+        <p class="form-intro">
+          Complete the required fields below.
+          Fields marked with an asterisk (*) are required.
+        </p>
+
+        <form id="emergency-form" class="emergency-form" autocomplete="on">
+
+          <!-- Patient and blood group -->
+          <h3 class="emergency-section-title">
+            Patient and blood requirements
+          </h3>
+
+          <div class="form-row">
+
+            <div class="form-group">
+
+              <label for="patient-name">
+                Patient name *
+              </label>
+
+              <input type="text" id="patient-name" name="patientName" placeholder="Enter patient name" minlength="2"
+                maxlength="100" autocomplete="off" required>
+
+              <span id="patient-name-msg" class="emergency-field-message" aria-live="polite"></span>
+
+            </div>
+
+            <div class="form-group">
+
+              <fieldset style="border: 0; padding: 0; margin: 0;">
+
+                <legend>
+                  Required blood group *
+                </legend>
+
+                <div class="emergency-radio-group">
+
+                  <label class="emergency-radio-label">
+                    <input type="radio" name="bloodGroup" value="A+" required>
+                    A+
+                  </label>
+
+                  <label class="emergency-radio-label">
+                    <input type="radio" name="bloodGroup" value="A-">
+                    A-
+                  </label>
+
+                  <label class="emergency-radio-label">
+                    <input type="radio" name="bloodGroup" value="B+">
+                    B+
+                  </label>
+
+                  <label class="emergency-radio-label">
+                    <input type="radio" name="bloodGroup" value="B-">
+                    B-
+                  </label>
+
+                  <label class="emergency-radio-label">
+                    <input type="radio" name="bloodGroup" value="AB+">
+                    AB+
+                  </label>
+
+                  <label class="emergency-radio-label">
+                    <input type="radio" name="bloodGroup" value="AB-">
+                    AB-
+                  </label>
+
+                  <label class="emergency-radio-label">
+                    <input type="radio" name="bloodGroup" value="O+">
+                    O+
+                  </label>
+
+                  <label class="emergency-radio-label">
+                    <input type="radio" name="bloodGroup" value="O-">
+                    O-
+                  </label>
+
+                </div>
+
+              </fieldset>
+
+              <span id="emergency-blood-msg" class="emergency-field-message" aria-live="polite"></span>
+
+            </div>
+
           </div>
-          <span id="emergency-blood-msg" class="field-msg"></span>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="emergency-location">Location / Hospital *</label>
-          <input type="text" id="emergency-location" name="location" placeholder="City, hospital name, area" required>
-          <span id="emergency-location-msg" class="field-msg"></span>
-        </div>
-        <div class="form-group">
-          <label for="emergency-phone">Contact Number *</label>
-          <div class="phone-input-group">
-            <span class="phone-prefix">+91</span>
-            <input type="tel" id="emergency-phone" name="phone" placeholder="10-digit number" maxlength="10" required>
+
+          <!-- Hospital and contact -->
+          <h3 class="emergency-section-title">
+            Hospital and contact information
+          </h3>
+
+          <div class="form-row">
+
+            <div class="form-group">
+
+              <label for="emergency-location">
+                Hospital and location *
+              </label>
+
+              <input type="text" id="emergency-location" name="location" placeholder="Hospital, area, city"
+                minlength="3" maxlength="250" required>
+
+              <span id="emergency-location-msg" class="emergency-field-message" aria-live="polite"></span>
+
+            </div>
+
+            <div class="form-group">
+
+              <label for="emergency-phone">
+                Contact mobile number *
+              </label>
+
+              <div class="emergency-phone-group">
+
+                <span class="emergency-phone-prefix" aria-hidden="true">
+                  +91
+                </span>
+
+                <input type="tel" id="emergency-phone" name="phone" placeholder="10-digit number" inputmode="numeric"
+                  pattern="[6-9][0-9]{9}" minlength="10" maxlength="10" autocomplete="tel-national" required>
+
+              </div>
+
+              <span id="emergency-phone-msg" class="emergency-field-message" aria-live="polite"></span>
+
+            </div>
+
           </div>
-          <span id="emergency-phone-msg" class="field-msg"></span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="emergency-message-details">Message / Urgency Details</label>
-        <textarea id="emergency-message-details" name="message" rows="4" placeholder="Any additional details (e.g., 'Need 2 units by tonight', 'Patient in ICU')"></textarea>
-      </div>
-      <button type="submit" class="btn btn-danger">Submit Emergency Request</button>
-      <p id="emergency-message" class="form-message"></p>
-    </form>
-  </section>
-</main>
 
-    <footer>
-        <p>&copy; 2026 Blood Donor Finder | College Mini Project</p>
-    </footer>
+          <!-- Additional details -->
+          <h3 class="emergency-section-title">
+            Additional information
+          </h3>
 
-    <script src="js/script.js" defer></script>
+          <div class="form-group">
+
+            <label for="emergency-message-details">
+              Request details
+              <span>(optional)</span>
+            </label>
+
+            <textarea id="emergency-message-details" name="message" rows="4" maxlength="1000"
+              placeholder="Add relevant information about the requirement."></textarea>
+
+            <p>
+              Avoid including unnecessary medical
+              records or sensitive personal details.
+            </p>
+
+          </div>
+
+          <!-- Privacy notice -->
+          <aside class="emergency-privacy-note">
+
+            <h3>Protect personal information</h3>
+
+            <p>
+              Provide accurate contact details and
+              only information necessary to coordinate
+              the request. Submit requests on behalf
+              of another person only when authorized
+              to do so. The handling and visibility of
+              submitted information depend on the
+              project's backend configuration.
+            </p>
+
+          </aside>
+
+          <!-- Submission -->
+          <button type="submit" class="btn btn-danger emergency-submit">
+            Submit Blood Request →
+          </button>
+
+          <p id="emergency-message" class="form-message emergency-message-output" role="status" aria-live="polite"
+            aria-atomic="true"></p>
+
+        </form>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+
+    <p>
+      <strong>🩸 Blood Donor Finder</strong>
+    </p>
+
+    <p>
+      A college project focused on connecting potential
+      blood donors with people searching for them.
+    </p>
+
+    <p>
+      <a href="index.html">Home</a>
+      &nbsp; · &nbsp;
+      <a href="find-donor.html">Find Donor</a>
+      &nbsp; · &nbsp;
+      <a href="register.html">Register</a>
+      &nbsp; · &nbsp;
+      <a href="emergency.html">Blood Request</a>
+      &nbsp; · &nbsp;
+      <a href="about.html">About</a>
+    </p>
+
+    <p>
+      &copy; 2026 Blood Donor Finder. College Project.
+    </p>
+
+  </footer>
+
 </body>
+
 </html>

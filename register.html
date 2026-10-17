@@ -1,91 +1,614 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Donor Finder - Register Donor</title>
+
+    <meta name="theme-color" content="#8f1738">
+    <meta name="description"
+        content="Register as a potential blood donor with Blood Donor Finder and help connect your community.">
+
+    <title>Become a Blood Donor | Blood Donor Finder</title>
+
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
+
+    <style>
+        /* Registration page specific styles */
+
+        .registration-intro {
+            width: min(100% - 40px, 900px);
+            margin: 36px auto 0;
+        }
+
+        .registration-eyebrow {
+            margin-bottom: 12px;
+            color: var(--primary);
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+        }
+
+        .registration-intro h1 {
+            max-width: 760px;
+            margin-bottom: 16px;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+        }
+
+        .registration-intro>p:last-child {
+            max-width: 680px;
+            font-size: 1.05rem;
+        }
+
+        .registration-layout {
+            width: min(100% - 40px, 900px);
+            margin: 28px auto 56px;
+        }
+
+        .registration-panel {
+            padding: clamp(22px, 4vw, 38px);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .registration-panel h2 {
+            margin-bottom: 8px;
+            font-size: 1.65rem;
+        }
+
+        .registration-panel .form-intro {
+            margin-bottom: 28px;
+        }
+
+        .registration-section-title {
+            margin: 30px 0 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 1.05rem;
+            letter-spacing: -0.01em;
+        }
+
+        .radio-group {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 9px;
+            min-height: 48px;
+            padding: 11px 13px;
+
+            color: var(--text);
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+
+            transition:
+                background 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .radio-label:has(input:checked) {
+            color: var(--primary);
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .radio-label input {
+            flex: 0 0 auto;
+            margin: 0;
+        }
+
+        .phone-input-group {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+        }
+
+        .phone-prefix {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 62px;
+
+            color: var(--text);
+            background: #f1f3f8;
+            border: 1px solid #d9deea;
+            border-right: 0;
+            border-radius: 10px 0 0 10px;
+
+            font-weight: 700;
+        }
+
+        .phone-input-group input {
+            min-width: 0;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .field-msg {
+            display: block;
+            min-height: 0;
+            color: var(--danger);
+            font-size: 0.85rem;
+            overflow-wrap: anywhere;
+        }
+
+        .field-msg:empty {
+            display: none;
+        }
+
+        .field-msg:not(:empty) {
+            margin-top: 4px;
+        }
+
+        .registration-note {
+            margin: 24px 0;
+            padding: 16px 18px;
+            background: #fff7ed;
+            border: 1px solid #fed7aa;
+            border-radius: 12px;
+        }
+
+        .registration-note h3 {
+            margin-bottom: 6px;
+            color: #9a3412;
+            font-size: 1rem;
+        }
+
+        .registration-note p {
+            color: #7c2d12;
+            font-size: 0.9rem;
+        }
+
+        .registration-submit {
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .registration-message {
+            overflow-wrap: anywhere;
+        }
+
+        .registration-benefits {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 22px;
+        }
+
+        .registration-benefit {
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+
+        .registration-benefit h3 {
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .registration-benefit p {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 640px) {
+
+            .registration-intro,
+            .registration-layout {
+                width: calc(100% - 28px);
+            }
+
+            .registration-intro {
+                margin-top: 26px;
+            }
+
+            .registration-layout {
+                margin-top: 20px;
+                margin-bottom: 32px;
+            }
+
+            .registration-panel {
+                padding: 20px 16px;
+                border-radius: 16px;
+            }
+
+            .radio-group {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 9px;
+            }
+
+            .radio-label {
+                padding: 10px;
+            }
+
+            .registration-benefits {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
+
 <body data-page="register">
+
+    <!-- Navigation -->
     <header>
-        <nav class="navbar">
-            <div class="logo">Blood Donor Finder</div>
+        <nav class="navbar" aria-label="Main navigation">
+
+            <a href="index.html" class="logo" aria-label="Blood Donor Finder home">
+                🩸 Blood Donor Finder
+            </a>
+
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="find-donor.html">Find Donor</a></li>
-                <li><a href="register.html">Register</a></li>
-                <li><a href="emergency.html">Emergency</a></li>
-                <li><a href="about.html">About</a></li>
+                <li>
+                    <a href="index.html">Home</a>
+                </li>
+                <li>
+                    <a href="find-donor.html">Find Donor</a>
+                </li>
+                <li>
+                    <a href="register.html" aria-current="page">
+                        Become a Donor
+                    </a>
+                </li>
+                <li>
+                    <a href="emergency.html">Blood Request</a>
+                </li>
+                <li>
+                    <a href="about.html">About Project</a>
+                </li>
             </ul>
+
         </nav>
     </header>
 
-    <main>
-  <section class="form-section">
-    <h2>Register as Blood Donor</h2>
-    <p class="form-intro">Fill the form below to become a donor. We'll verify and add you to the directory.</p>
-    
-    <form id="register-form" class="donor-form">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="donor-name">Full Name *</label>
-          <input type="text" id="donor-name" name="name" placeholder="Your full name" required>
-          <span id="donor-name-msg" class="field-msg"></span>
-        </div>
-        <div class="form-group">
-          <label for="donor-age">Age *</label>
-          <input type="number" id="donor-age" name="age" placeholder="18-65" min="18" max="65" required>
-          <span id="donor-age-msg" class="field-msg"></span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Blood Group *</label>
-        <div class="radio-group">
-          <label class="radio-label"><input type="radio" name="bloodGroup" value="A+"> A+</label>
-          <label class="radio-label"><input type="radio" name="bloodGroup" value="A-"> A-</label>
-          <label class="radio-label"><input type="radio" name="bloodGroup" value="B+"> B+</label>
-          <label class="radio-label"><input type="radio" name="bloodGroup" value="B-"> B-</label>
-          <label class="radio-label"><input type="radio" name="bloodGroup" value="AB+"> AB+</label>
-          <label class="radio-label"><input type="radio" name="bloodGroup" value="AB-"> AB-</label>
-          <label class="radio-label"><input type="radio" name="bloodGroup" value="O+"> O+</label>
-          <label class="radio-label"><input type="radio" name="bloodGroup" value="O-"> O-</label>
-        </div>
-        <span id="donor-blood-msg" class="field-msg"></span>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="donor-state">State *</label>
-          <select id="donor-state" name="state" required>
-            <option value="">Select State</option>
-          </select>
-          <span id="donor-state-msg" class="field-msg"></span>
-        </div>
-        <div class="form-group">
-          <label for="donor-district">District *</label>
-          <select id="donor-district" name="district" required disabled>
-            <option value="">Select State First</option>
-          </select>
-          <span id="donor-district-msg" class="field-msg"></span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="donor-phone">Phone Number *</label>
-        <div class="phone-input-group">
-          <span class="phone-prefix">+91</span>
-          <input type="tel" id="donor-phone" name="phone" placeholder="10-digit number" maxlength="10" required>
-        </div>
-        <span id="donor-phone-msg" class="field-msg"></span>
-      </div>
-      <button type="submit" class="btn btn-primary">Register as Donor</button>
-      <p id="register-message" class="form-message"></p>
-    </form>
-  </section>
-</main>
+    <main id="main-content">
 
+        <!-- Page introduction -->
+        <section class="registration-intro">
+
+            <p class="registration-eyebrow">
+                BE PART OF SOMETHING MEANINGFUL
+            </p>
+
+            <h1>Become a blood donor.</h1>
+
+            <p>
+                Register your details in the donor directory
+                to help people searching for potential donors
+                in their area.
+            </p>
+
+        </section>
+
+        <!-- Registration form -->
+        <section class="registration-layout">
+
+            <div class="registration-panel">
+
+                <h2>Donor registration</h2>
+
+                <p class="form-intro">
+                    Complete the information below.
+                    Fields marked with an asterisk (*) are required.
+                </p>
+
+                <form id="register-form" class="donor-form" autocomplete="on">
+
+                    <!-- Personal information -->
+                    <h3 class="registration-section-title">
+                        Personal information
+                    </h3>
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="donor-name">
+                                Full name *
+                            </label>
+
+                            <input type="text" id="donor-name" name="name" placeholder="Enter your full name"
+                                autocomplete="name" minlength="2" maxlength="100" required>
+
+                            <span id="donor-name-msg" class="field-msg" aria-live="polite"></span>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="donor-age">
+                                Age *
+                            </label>
+
+                            <input type="number" id="donor-age" name="age" placeholder="Enter your age" min="18"
+                                max="65" step="1" inputmode="numeric" required>
+
+                            <span id="donor-age-msg" class="field-msg" aria-live="polite"></span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Blood group -->
+                    <h3 class="registration-section-title">
+                        Blood group
+                    </h3>
+
+                    <div class="form-group">
+
+                        <fieldset style="border: 0; padding: 0; margin: 0;">
+
+                            <legend>
+                                Select your blood group *
+                            </legend>
+
+                            <div class="radio-group">
+
+                                <label class="radio-label">
+                                    <input type="radio" name="bloodGroup" value="A+" required>
+                                    A+
+                                </label>
+
+                                <label class="radio-label">
+                                    <input type="radio" name="bloodGroup" value="A-">
+                                    A-
+                                </label>
+
+                                <label class="radio-label">
+                                    <input type="radio" name="bloodGroup" value="B+">
+                                    B+
+                                </label>
+
+                                <label class="radio-label">
+                                    <input type="radio" name="bloodGroup" value="B-">
+                                    B-
+                                </label>
+
+                                <label class="radio-label">
+                                    <input type="radio" name="bloodGroup" value="AB+">
+                                    AB+
+                                </label>
+
+                                <label class="radio-label">
+                                    <input type="radio" name="bloodGroup" value="AB-">
+                                    AB-
+                                </label>
+
+                                <label class="radio-label">
+                                    <input type="radio" name="bloodGroup" value="O+">
+                                    O+
+                                </label>
+
+                                <label class="radio-label">
+                                    <input type="radio" name="bloodGroup" value="O-">
+                                    O-
+                                </label>
+
+                            </div>
+
+                        </fieldset>
+
+                        <span id="donor-blood-msg" class="field-msg" aria-live="polite"></span>
+
+                    </div>
+
+                    <!-- Location -->
+                    <h3 class="registration-section-title">
+                        Location
+                    </h3>
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="donor-state">
+                                State or union territory *
+                            </label>
+
+                            <select id="donor-state" name="state" required>
+                                <option value="">
+                                    Select your state
+                                </option>
+                            </select>
+
+                            <span id="donor-state-msg" class="field-msg" aria-live="polite"></span>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="donor-district">
+                                District or city *
+                            </label>
+
+                            <select id="donor-district" name="district" required disabled>
+                                <option value="">
+                                    Select a state first
+                                </option>
+                            </select>
+
+                            <span id="donor-district-msg" class="field-msg" aria-live="polite"></span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Contact information -->
+                    <h3 class="registration-section-title">
+                        Contact information
+                    </h3>
+
+                    <div class="form-group">
+
+                        <label for="donor-phone">
+                            Mobile number *
+                        </label>
+
+                        <div class="phone-input-group">
+
+                            <span class="phone-prefix" aria-hidden="true">
+                                +91
+                            </span>
+
+                            <input type="tel" id="donor-phone" name="phone" placeholder="10-digit mobile number"
+                                autocomplete="tel-national" inputmode="numeric" pattern="[6-9][0-9]{9}" minlength="10"
+                                maxlength="10" aria-describedby="phone-help donor-phone-msg" required>
+
+                        </div>
+
+                        <p id="phone-help">
+                            Enter an Indian mobile number without
+                            the country code.
+                        </p>
+
+                        <span id="donor-phone-msg" class="field-msg" aria-live="polite"></span>
+
+                    </div>
+
+                    <!-- Email notifications -->
+                    <!-- <h3 class="registration-section-title">
+                        Email notifications
+                    </h3> -->
+
+                    <div class="form-group">
+                        <label for="donor-email">
+                            Email address (optional)
+                        </label>
+
+                        <input type="email" id="donor-email" name="email" placeholder="Enter your email address"
+                            autocomplete="email" maxlength="254">
+
+                        <p class="field-msg" id="donor-email-msg" aria-live="polite"></p>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label style="display: flex; align-items: flex-start; gap: 10px;">
+                            <input type="checkbox" id="donor-email-consent" name="emailConsent" value="true"
+                                style="margin-top: 5px; flex-shrink: 0;">
+
+                            <span>
+                                I agree to receive email alerts about emergency blood
+                                requests matching my blood group and location.
+                                I understand that I can withdraw my consent later.
+                            </span>
+                        </label>
+                    </div>
+                
+
+                    <!-- Privacy and eligibility note -->
+                    <aside class="registration-note" aria-labelledby="registration-note-title">
+
+                        <h3 id="registration-note-title">
+                            Important information
+                        </h3>
+
+                        <p>
+                            Submit your own accurate information.
+                            Your contact details may be used to
+                            coordinate donor searches according
+                            to how this project's directory is
+                            configured. Do not register another
+                            person's information without their
+                            permission.
+                        </p>
+
+                        <p style="margin-top: 8px;">
+                            Registration does not establish
+                            medical eligibility to donate.
+                            A qualified healthcare professional
+                            or blood bank must assess eligibility.
+                        </p>
+
+                    </aside>
+
+                    <!-- Submission -->
+                    <button type="submit" class="btn btn-primary registration-submit">
+                        Register as a Donor →
+                    </button>
+
+                    <p id="register-message" class="form-message registration-message" role="status" aria-live="polite"
+                        aria-atomic="true"></p>
+
+                </form>
+
+            </div>
+
+            <!-- Supporting information -->
+            <div class="registration-benefits">
+
+                <article class="registration-benefit">
+                    <h3>📍 Local discovery</h3>
+                    <p>
+                        Location information helps people
+                        narrow their search for potential donors.
+                    </p>
+                </article>
+
+                <article class="registration-benefit">
+                    <h3>🩸 Blood group</h3>
+                    <p>
+                        Accurate blood group information helps
+                        users identify records worth reviewing.
+                    </p>
+                </article>
+
+                <article class="registration-benefit">
+                    <h3>🤝 Responsible giving</h3>
+                    <p>
+                        Keep your information accurate and
+                        confirm every donation arrangement
+                        with appropriate medical professionals.
+                    </p>
+                </article>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Blood Donor Finder | College Mini Project</p>
+
+        <p>
+            <strong>🩸 Blood Donor Finder</strong>
+        </p>
+
+        <p>
+            A college project focused on connecting potential
+            blood donors with people searching for them.
+        </p>
+
+        <p>
+            <a href="index.html">Home</a>
+            &nbsp; · &nbsp;
+            <a href="find-donor.html">Find Donor</a>
+            &nbsp; · &nbsp;
+            <a href="register.html">Register</a>
+            &nbsp; · &nbsp;
+            <a href="emergency.html">Blood Request</a>
+            &nbsp; · &nbsp;
+            <a href="about.html">About</a>
+        </p>
+
+        <p>
+            &copy; 2026 Blood Donor Finder. College Project.
+        </p>
+
     </footer>
 
-    <script src="js/script.js" defer></script>
 </body>
+
 </html>

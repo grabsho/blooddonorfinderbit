@@ -1,65 +1,261 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Donor Finder - Home</title>
+
+    <meta name="theme-color" content="#8f1738">
+    <meta
+        name="description"
+        content="Blood Donor Finder helps people discover blood donors by blood group and location, register as donors, and submit blood requests."
+    >
+
+    <title>Blood Donor Finder | Connect. Donate. Save Lives.</title>
+
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
 </head>
+
 <body data-page="home">
+
+    <!-- Navigation -->
     <header>
-        <nav class="navbar">
-            <div class="logo">Blood Donor Finder</div>
+        <nav class="navbar" aria-label="Main navigation">
+            <a
+                href="index.html"
+                class="logo"
+                aria-label="Blood Donor Finder home"
+            >
+                🩸 Blood Donor Finder
+            </a>
+
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="find-donor.html">Find Donor</a></li>
-                <li><a href="register.html">Register</a></li>
-                <li><a href="emergency.html">Emergency</a></li>
-                <li><a href="about.html">About</a></li>
+                <li>
+                    <a href="index.html" aria-current="page">Home</a>
+                </li>
+                <li>
+                    <a href="find-donor.html">Find Donor</a>
+                </li>
+                <li>
+                    <a href="register.html">Become a Donor</a>
+                </li>
+                <li>
+                    <a href="emergency.html">Blood Request</a>
+                </li>
+                <li>
+                    <a href="about.html">About Project</a>
+                </li>
             </ul>
         </nav>
     </header>
 
-    <main>
-  <!-- Hero Section -->
-  <section class="hero">
-    <h1>Find Blood Donors Near You</h1>
-    <p class="tagline">Save lives. Donate blood. Be the reason someone survives today.</p>
-    <div class="hero-buttons">
-      <a href="find-donor.html" class="btn btn-primary">Find Blood Donor</a>
-      <a href="register.html" class="btn btn-secondary">Register as Donor</a>
-      <a href="emergency.html" class="btn btn-danger">Emergency Request</a>
-    </div>
-  </section>
+    <main id="main-content">
 
-  <!-- Info Section -->
-  <section class="info-cards">
-    <div class="card">
-      <h3>🩸 Why Donate?</h3>
-      <p>One donation can save up to 3 lives. Blood cannot be manufactured — it only comes from donors.</p>
-    </div>
-    <div class="card">
-      <h3>📋 Who Can Donate?</h3>
-      <p>Age 18–65, weight ≥45kg, healthy, no recent infections. Men: every 3 months. Women: every 4 months.</p>
-    </div>
-    <div class="card">
-      <h3>⏱️ Process</h3>
-      <p>Registration → Health check → Donation (10 min) → Refreshments → Rest. Total: ~30 minutes.</p>
-    </div>
-  </section>
+        <!-- Hero -->
+        <section class="hero" aria-labelledby="hero-title">
 
-  <!-- Quick Stats (optional) -->
-  <section class="stats">
-    <div class="stat"><span class="stat-number">500+</span><p>Registered Donors</p></div>
-    <div class="stat"><span class="stat-number">50+</span><p>Cities Covered</p></div>
-    <div class="stat"><span class="stat-number">200+</span><p>Lives Helped</p></div>
-  </section>
-</main>
+            <p class="tagline">
+                EVERY DONATION CAN MAKE A DIFFERENCE
+            </p>
 
+            <h1 id="hero-title">
+                The right donor.<br>
+                At the right time.
+            </h1>
+
+            <p>
+                Finding a blood donor should be simple.
+                Discover donors by blood group and location,
+                register to help others, and bring your community
+                closer to the people who need it.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="find-donor.html" class="btn btn-primary">
+                    Find a Blood Donor →
+                </a>
+
+                <a href="register.html" class="btn btn-secondary">
+                    Become a Donor
+                </a>
+
+                <a href="emergency.html" class="btn btn-danger">
+                    Request Blood
+                </a>
+            </div>
+
+        </section>
+
+        <!-- Introduction -->
+        <section
+            class="info-cards"
+            aria-label="About the platform"
+        >
+
+            <article class="card">
+                <h3>🔎 Find Donors</h3>
+                <p>
+                    Search the available donor directory using
+                    blood group, state, and district filters.
+                </p>
+                <p>
+                    <a href="find-donor.html">
+                        Explore donor search →
+                    </a>
+                </p>
+            </article>
+
+            <article class="card">
+                <h3>❤️ Become a Donor</h3>
+                <p>
+                    Register your details to make yourself
+                    discoverable to people searching the donor
+                    directory.
+                </p>
+                <p>
+                    <a href="register.html">
+                        Register as a donor →
+                    </a>
+                </p>
+            </article>
+
+            <article class="card">
+                <h3>🚨 Blood Request</h3>
+                <p>
+                    Submit a request with the required blood
+                    group and location details to help coordinate
+                    a search for a suitable donor.
+                </p>
+                <p>
+                    <a href="emergency.html">
+                        Submit a request →
+                    </a>
+                </p>
+            </article>
+
+        </section>
+
+        <!-- How it works -->
+        <section
+            class="stats"
+            aria-labelledby="process-title"
+        >
+
+            <div class="stat">
+                <span class="stat-number">01</span>
+                <h3 id="process-title">Search</h3>
+                <p>
+                    Choose a blood group and narrow the search
+                    by location.
+                </p>
+            </div>
+
+            <div class="stat">
+                <span class="stat-number">02</span>
+                <h3>Review</h3>
+                <p>
+                    Review available directory information and
+                    identify a potential donor.
+                </p>
+            </div>
+
+            <div class="stat">
+                <span class="stat-number">03</span>
+                <h3>Coordinate</h3>
+                <p>
+                    Contact the potential donor and confirm
+                    availability and suitability through the
+                    appropriate medical professionals.
+                </p>
+            </div>
+
+        </section>
+
+        <!-- Safety information -->
+        <section class="about-section">
+
+            <article class="about-card">
+                <h2>Care, safety and responsibility</h2>
+
+                <p>
+                    Blood Donor Finder is a college project
+                    designed to help people find potential
+                    blood donors using the available directory.
+                </p>
+
+                <p>
+                    A directory match does not guarantee donor
+                    availability, blood compatibility, or medical
+                    eligibility. Always confirm details directly
+                    and follow guidance from a qualified healthcare
+                    professional or blood bank.
+                </p>
+
+                <p>
+                    For a life-threatening emergency, contact
+                    local emergency services or the nearest
+                    appropriate medical facility immediately.
+                    Do not wait for an online response.
+                </p>
+            </article>
+
+        </section>
+
+        <!-- Final call to action -->
+        <section class="hero" aria-labelledby="community-title">
+
+            <h2 id="community-title">
+                Someone may need your help.
+            </h2>
+
+            <p>
+                Take a small step toward building a more
+                connected donor community.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="register.html" class="btn btn-primary">
+                    Join as a Donor
+                </a>
+
+                <a href="find-donor.html" class="btn btn-secondary">
+                    Search Directory
+                </a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Blood Donor Finder | College Mini Project</p>
+        <p>
+            <strong>🩸 Blood Donor Finder</strong>
+        </p>
+
+        <p>
+            A college project focused on connecting potential
+            blood donors with people searching for them.
+        </p>
+
+        <p>
+            <a href="index.html">Home</a>
+            &nbsp; · &nbsp;
+            <a href="find-donor.html">Find Donor</a>
+            &nbsp; · &nbsp;
+            <a href="register.html">Register</a>
+            &nbsp; · &nbsp;
+            <a href="emergency.html">Blood Request</a>
+            &nbsp; · &nbsp;
+            <a href="about.html">About</a>
+        </p>
+
+        <p>
+            &copy; 2026 Blood Donor Finder.
+            College Project.
+        </p>
     </footer>
 
-    <script src="js/script.js" defer></script>
 </body>
 </html>

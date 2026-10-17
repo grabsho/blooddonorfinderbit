@@ -1,84 +1,472 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Donor Finder - About</title>
+
+    <title>About Us | Blood Donor Finder</title>
+    <meta
+        name="description"
+        content="Learn about the Blood Donor Finder college project, its objectives, technology stack, development team, and learning outcomes."
+    >
+
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
+
+    <style>
+        /* Page-specific styles */
+        .about-hero {
+            padding: 64px 20px 48px;
+            text-align: center;
+            background: linear-gradient(135deg, #fff1f2, #ffffff);
+        }
+
+        .about-hero .eyebrow {
+            display: inline-block;
+            margin-bottom: 14px;
+            color: #b42332;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .about-hero h1 {
+            margin: 0 auto 16px;
+            max-width: 760px;
+            color: #252b36;
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            line-height: 1.15;
+        }
+
+        .about-hero p {
+            max-width: 700px;
+            margin: 0 auto;
+            color: #5c6470;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .about-container {
+            width: min(1100px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 48px 0 64px;
+        }
+
+        .about-section {
+            margin-bottom: 48px;
+        }
+
+        .about-section-heading {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .about-section-heading h2 {
+            margin: 0 0 10px;
+            color: #252b36;
+            font-size: clamp(1.6rem, 3vw, 2.2rem);
+        }
+
+        .about-section-heading p {
+            max-width: 680px;
+            margin: 0 auto;
+            color: #68717e;
+            line-height: 1.7;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .about-card {
+            min-width: 0;
+            padding: 26px;
+            border: 1px solid #e8eaf0;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 6px 22px rgba(25, 35, 55, 0.045);
+        }
+
+        .about-card-icon {
+            display: grid;
+            width: 46px;
+            height: 46px;
+            margin-bottom: 16px;
+            place-items: center;
+            border-radius: 12px;
+            background: #fff0f1;
+            font-size: 1.4rem;
+        }
+
+        .about-card h3 {
+            margin: 0 0 12px;
+            color: #252b36;
+            font-size: 1.2rem;
+        }
+
+        .about-card p,
+        .about-card li {
+            color: #626b78;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+        }
+
+        .about-card p {
+            margin: 0;
+        }
+
+        .about-card ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .tech-list {
+            display: grid;
+            gap: 12px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .tech-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .tech-list li span {
+            flex: 0 0 auto;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .team-member {
+            min-width: 0;
+            padding: 24px 16px;
+            border: 1px solid #e8eaf0;
+            border-radius: 16px;
+            background: #fff;
+            text-align: center;
+        }
+
+        .team-avatar {
+            display: grid;
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            place-items: center;
+            border-radius: 50%;
+            background: #fff0f1;
+            color: #b42332;
+            font-size: 1.35rem;
+            font-weight: 800;
+        }
+
+        .team-member h3 {
+            margin: 0 0 8px;
+            color: #252b36;
+            font-size: 1rem;
+            overflow-wrap: anywhere;
+        }
+
+        .team-member p {
+            margin: 0;
+            color: #68717e;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .project-note {
+            padding: 24px;
+            border: 1px solid #f3cbd0;
+            border-radius: 16px;
+            background: #fff7f7;
+        }
+
+        .project-note h3 {
+            margin: 0 0 10px;
+            color: #8f1d2c;
+        }
+
+        .project-note p {
+            margin: 0;
+            color: #5c6470;
+            line-height: 1.8;
+        }
+
+        .about-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        @media (max-width: 850px) {
+            .team-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .about-hero {
+                padding: 44px 18px 36px;
+            }
+
+            .about-container {
+                width: min(100% - 28px, 1100px);
+                padding: 34px 0 44px;
+            }
+
+            .about-grid,
+            .team-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .about-card {
+                padding: 22px;
+            }
+
+            .project-note {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
+
 <body data-page="about">
+
     <header>
         <nav class="navbar">
             <div class="logo">Blood Donor Finder</div>
+
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="find-donor.html">Find Donor</a></li>
                 <li><a href="register.html">Register</a></li>
                 <li><a href="emergency.html">Emergency</a></li>
-                <li><a href="about.html">About</a></li>
+                <li><a href="about.html" aria-current="page">About</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-  <section class="about-section">
-    <h2>About This Project</h2>
-    
-    <div class="about-card">
-      <h3>🎯 Project Objective</h3>
-      <p>Build a simple, responsive website to connect blood donors with those in need. Users can search donors by blood group and city, register as donors, and submit emergency requests — all without complex backend infrastructure.</p>
-    </div>
+        <section class="about-hero">
+            <span class="eyebrow">About the Project</span>
 
-    <div class="about-card">
-      <h3>🛠️ Tech Stack</h3>
-      <ul>
-        <li>HTML5 — Structure</li>
-        <li>CSS3 — Styling & Responsive Design</li>
-        <li>Vanilla JavaScript — Search, Filter, Form Validation</li>
-        <li>Google Apps Script + Google Sheets — Backend (Data Storage)</li>
-      </ul>
-    </div>
+            <h1>Connecting people through the power of blood donation.</h1>
 
-    <div class="about-card">
-      <h3>📚 Learning Outcomes</h3>
-      <ul>
-        <li>Multi-page website structure</li>
-        <li>Form handling & validation</li>
-        <li>DOM manipulation & dynamic content</li>
-        <li>Fetch API & serverless backend integration</li>
-        <li>Responsive design with media queries</li>
-        <li>Team collaboration & version control</li>
-      </ul>
-    </div>
-  </section>
+            <p>
+                Blood Donor Finder is a college mini project designed to make
+                it easier to discover potential blood donors by blood group
+                and location, register as a donor, and submit an urgent
+                blood request.
+            </p>
+        </section>
 
-  <section class="team-section">
-    <h2>Our Team</h2>
-    <div class="team-grid">
-      <div class="team-member">
-        <h4>Aditya Gupta</h4>
-        <p>Lead HTML Developer</p>
-      </div>
-      <div class="team-member">
-        <h4>Ashwin</h4>
-        <p>HTML Developer</p>
-      </div>
-      <div class="team-member">
-        <h4>Ayush</h4>
-        <p>CSS & JavaScript Developer</p>
-      </div>
-      <div class="team-member">
-        <h4>Ayush Panwar</h4>
-        <p>Project Coordinator & Documentation</p>
-      </div>
-    </div>
-  </section>
-</main>
+        <div class="about-container">
+
+            <section class="about-section">
+                <div class="about-section-heading">
+                    <h2>What We're Building</h2>
+                    <p>
+                        A simple, accessible platform that demonstrates how
+                        web technology can support communication between
+                        people seeking blood donors and potential donors.
+                    </p>
+                </div>
+
+                <div class="about-grid">
+                    <article class="about-card">
+                        <div class="about-card-icon" aria-hidden="true">🎯</div>
+                        <h3>Project Objective</h3>
+                        <p>
+                            Develop a responsive website where users can search
+                            for potential donors, register their donor details,
+                            and submit blood requests. The goal is to provide
+                            a clear and easy-to-use interface backed by a
+                            lightweight serverless data system.
+                        </p>
+                    </article>
+
+                    <article class="about-card">
+                        <div class="about-card-icon" aria-hidden="true">⚙️</div>
+                        <h3>How It Works</h3>
+                        <p>
+                            Users can browse the donor search page, provide
+                            registration details, or submit a blood request.
+                            The website uses JavaScript for interface
+                            interactions and Google Apps Script with Google
+                            Sheets for backend processing and data storage.
+                        </p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <div class="about-section-heading">
+                    <h2>Technology Stack</h2>
+                    <p>
+                        The project combines standard web technologies with
+                        Google's serverless tools.
+                    </p>
+                </div>
+
+                <div class="about-card">
+                    <ul class="tech-list">
+                        <li>
+                            <span aria-hidden="true">🌐</span>
+                            <div>
+                                <strong>HTML5</strong>
+                                <p>Provides the structure and content of each page.</p>
+                            </div>
+                        </li>
+
+                        <li>
+                            <span aria-hidden="true">🎨</span>
+                            <div>
+                                <strong>CSS3</strong>
+                                <p>Handles visual styling, layouts, and responsive design.</p>
+                            </div>
+                        </li>
+
+                        <li>
+                            <span aria-hidden="true">💻</span>
+                            <div>
+                                <strong>Vanilla JavaScript</strong>
+                                <p>Supports form interactions, validation, search, filtering, and dynamic page content.</p>
+                            </div>
+                        </li>
+
+                        <li>
+                            <span aria-hidden="true">☁️</span>
+                            <div>
+                                <strong>Google Apps Script</strong>
+                                <p>Provides the server-side functions that connect the website to its data source.</p>
+                            </div>
+                        </li>
+
+                        <li>
+                            <span aria-hidden="true">📊</span>
+                            <div>
+                                <strong>Google Sheets</strong>
+                                <p>Acts as the project's data store for supported application records.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <div class="about-section-heading">
+                    <h2>What We Learned</h2>
+                    <p>
+                        This project provides practical experience in
+                        developing and integrating a multi-page web application.
+                    </p>
+                </div>
+
+                <div class="about-grid">
+                    <article class="about-card">
+                        <div class="about-card-icon" aria-hidden="true">📚</div>
+                        <h3>Development Skills</h3>
+                        <ul>
+                            <li>Building a multi-page website</li>
+                            <li>Responsive layouts and CSS media queries</li>
+                            <li>DOM manipulation and dynamic content</li>
+                            <li>Client-side form validation</li>
+                        </ul>
+                    </article>
+
+                    <article class="about-card">
+                        <div class="about-card-icon" aria-hidden="true">🚀</div>
+                        <h3>Integration & Collaboration</h3>
+                        <ul>
+                            <li>Using the Fetch API for backend communication</li>
+                            <li>Integrating Google Apps Script and Sheets</li>
+                            <li>Debugging and testing web applications</li>
+                            <li>Version control and project documentation</li>
+                        </ul>
+                    </article>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <div class="about-section-heading">
+                    <h2>Meet the Team</h2>
+                    <p>
+                        The students who contributed to the development
+                        and documentation of this project.
+                    </p>
+                </div>
+
+                <div class="team-grid">
+                    <article class="team-member">
+                        <div class="team-avatar" aria-hidden="true">AG</div>
+                        <h3>Aditya Gupta</h3>
+                        <p>Lead HTML Developer</p>
+                    </article>
+
+                    <article class="team-member">
+                        <div class="team-avatar" aria-hidden="true">A</div>
+                        <h3>Ashwin</h3>
+                        <p>HTML Developer</p>
+                    </article>
+
+                    <article class="team-member">
+                        <div class="team-avatar" aria-hidden="true">A</div>
+                        <h3>Ayush</h3>
+                        <p>CSS &amp; JavaScript Developer</p>
+                    </article>
+
+                    <article class="team-member">
+                        <div class="team-avatar" aria-hidden="true">AP</div>
+                        <h3>Ayush Panwar</h3>
+                        <p>Project Coordinator &amp; Documentation</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <div class="project-note">
+                    <h3>Important Safety Note</h3>
+                    <p>
+                        Blood Donor Finder is a college project and is not a
+                        substitute for professional medical care or an
+                        emergency response service. Donor listings and
+                        submitted requests must be verified independently.
+                        In an emergency, contact local emergency services
+                        or the nearest hospital rather than waiting for a
+                        response from this website.
+                    </p>
+
+                    <div class="about-actions">
+                        <a class="btn btn-primary" href="find-donor.html">
+                            Find a Donor
+                        </a>
+
+                        <a class="btn btn-secondary" href="register.html">
+                            Register as a Donor
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
 
     <footer>
         <p>&copy; 2026 Blood Donor Finder | College Mini Project</p>
     </footer>
 
-    <script src="js/script.js" defer></script>
 </body>
 </html>

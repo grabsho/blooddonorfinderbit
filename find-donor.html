@@ -1,79 +1,326 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Donor Finder - Find Donor</title>
+
+    <meta name="theme-color" content="#8f1738">
+    <meta
+        name="description"
+        content="Search the Blood Donor Finder directory by blood group, state and district."
+    >
+
+    <title>Find a Blood Donor | Blood Donor Finder</title>
+
     <link rel="stylesheet" href="css/style.css">
+    <script src="js/script.js" defer></script>
 </head>
+
 <body data-page="find-donor">
+
+    <!-- Main navigation -->
     <header>
-        <nav class="navbar">
-            <div class="logo">Blood Donor Finder</div>
+        <nav class="navbar" aria-label="Main navigation">
+
+            <a
+                href="index.html"
+                class="logo"
+                aria-label="Blood Donor Finder home"
+            >
+                🩸 Blood Donor Finder
+            </a>
+
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="find-donor.html">Find Donor</a></li>
-                <li><a href="register.html">Register</a></li>
-                <li><a href="emergency.html">Emergency</a></li>
-                <li><a href="about.html">About</a></li>
+                <li>
+                    <a href="index.html">Home</a>
+                </li>
+                <li>
+                    <a href="find-donor.html" aria-current="page">
+                        Find Donor
+                    </a>
+                </li>
+                <li>
+                    <a href="register.html">Become a Donor</a>
+                </li>
+                <li>
+                    <a href="emergency.html">Blood Request</a>
+                </li>
+                <li>
+                    <a href="about.html">About Project</a>
+                </li>
             </ul>
+
         </nav>
     </header>
 
-    <main>
-  <!-- Search Form Section -->
-  <section class="search-section">
-    <h2>Find Blood Donor</h2>
-    <p class="form-intro">Select any filter and search. Leave all empty to see all donors.</p>
-    <form id="search-form" class="search-form">
-      <div class="form-row">
-        <div class="form-group">
-          <label for="blood-group">Blood Group</label>
-          <select id="blood-group" name="bloodGroup">
-            <option value="">All Blood Groups</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="state">State</label>
-          <select id="state" name="state">
-            <option value="">All States</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="district">District</label>
-          <select id="district" name="district" disabled>
-            <option value="">Select State First</option>
-          </select>
-        </div>
-      </div>
-      <button type="submit" class="btn btn-primary">Search Donors</button>
-    </form>
-  </section>
+    <main id="main-content">
 
-  <!-- Results Section -->
-  <section class="results-section">
-    <h3 id="results-heading">Search Results</h3>
-    <p id="results-message" class="results-message">Select filters and click Search, or search with no filters to see all donors.</p>
-    <div id="donors-grid" class="donors-grid">
-      <!-- Donor cards will appear here via JavaScript later -->
-    </div>
-  </section>
-</main>
+        <!-- Page introduction -->
+        <section class="hero" aria-labelledby="page-title">
 
+            <p class="tagline">
+                CONNECTING PEOPLE WHO NEED HELP
+            </p>
+
+            <h1 id="page-title">
+                Find a blood donor
+            </h1>
+
+            <p>
+                Search the available donor directory by blood
+                group and location. Review matching records
+                and confirm availability directly with the donor.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="#donor-search" class="btn btn-primary">
+                    Search Directory ↓
+                </a>
+
+                <a href="register.html" class="btn btn-secondary">
+                    Become a Donor
+                </a>
+            </div>
+
+        </section>
+
+        <!-- Important information -->
+        <section
+            class="about-section"
+            aria-label="Important information"
+        >
+            <article class="about-card">
+
+                <h2>Before you search</h2>
+
+                <p>
+                    Search results depend on the information
+                    available in the donor directory. A matching
+                    record does not guarantee that a donor is
+                    currently available or medically eligible.
+                </p>
+
+                <p>
+                    For a medical emergency, contact local
+                    emergency services or an appropriate
+                    healthcare facility immediately. Do not
+                    wait for a website response.
+                </p>
+
+            </article>
+        </section>
+
+        <!-- Donor search form -->
+        <section
+            class="search-section"
+            id="donor-search"
+            aria-labelledby="search-title"
+        >
+
+            <h2 id="search-title">
+                Search the directory
+            </h2>
+
+            <p class="form-intro">
+                Choose one or more filters to narrow your search.
+                Leave the filters empty to search without
+                restrictions.
+            </p>
+
+            <form
+                id="search-form"
+                class="search-form"
+                role="search"
+            >
+
+                <!-- Blood group and state -->
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="blood-group">
+                            Blood group
+                        </label>
+
+                        <select
+                            id="blood-group"
+                            name="bloodGroup"
+                        >
+                            <option value="">All blood groups</option>
+                            <option value="A+">A positive (A+)</option>
+                            <option value="A-">A negative (A-)</option>
+                            <option value="B+">B positive (B+)</option>
+                            <option value="B-">B negative (B-)</option>
+                            <option value="AB+">AB positive (AB+)</option>
+                            <option value="AB-">AB negative (AB-)</option>
+                            <option value="O+">O positive (O+)</option>
+                            <option value="O-">O negative (O-)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="state">
+                            State or union territory
+                        </label>
+
+                        <select
+                            id="state"
+                            name="state"
+                        >
+                            <option value="">All states</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- District -->
+                <div class="form-row">
+
+                    <div class="form-group">
+                        <label for="district">
+                            District or city
+                        </label>
+
+                        <select
+                            id="district"
+                            name="district"
+                            disabled
+                        >
+                            <option value="">
+                                Select a state first
+                            </option>
+                        </select>
+
+                        <p>
+                            Choose a state first to select
+                            a district.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Actions -->
+                <div class="hero-buttons">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="search-submit"
+                    >
+                        Search Donors
+                    </button>
+
+                    <button
+                        type="reset"
+                        class="btn btn-secondary"
+                    >
+                        Clear Filters
+                    </button>
+
+                </div>
+
+            </form>
+
+        </section>
+
+        <!-- Search results -->
+        <section
+            class="search-section results-section"
+            aria-labelledby="results-heading"
+        >
+
+            <h2 id="results-heading">
+                Donor directory
+            </h2>
+
+            <p
+                id="results-message"
+                class="results-message"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+            >
+                Loading available donor records...
+            </p>
+
+            <div
+                id="donors-grid"
+                class="donors-grid"
+                aria-live="polite"
+                aria-busy="true"
+            >
+                <!-- Donor cards are rendered by js/script.js -->
+            </div>
+
+        </section>
+
+        <!-- Become a donor -->
+        <section class="search-section">
+
+            <article class="about-card">
+
+                <h2>Can't find a matching donor?</h2>
+
+                <p>
+                    You can broaden your search or submit a
+                    blood request. If you are eligible and
+                    willing to donate, consider registering
+                    to help people searching the directory.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a
+                        href="register.html"
+                        class="btn btn-primary"
+                    >
+                        Register as a Donor
+                    </a>
+
+                    <a
+                        href="emergency.html"
+                        class="btn btn-secondary"
+                    >
+                        Submit Blood Request
+                    </a>
+
+                </div>
+
+            </article>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Blood Donor Finder | College Mini Project</p>
+
+        <p>
+            <strong>🩸 Blood Donor Finder</strong>
+        </p>
+
+        <p>
+            A college project designed to connect people
+            with potential blood donors.
+        </p>
+
+        <p>
+            <a href="index.html">Home</a>
+            &nbsp; · &nbsp;
+            <a href="find-donor.html">Find Donor</a>
+            &nbsp; · &nbsp;
+            <a href="register.html">Register</a>
+            &nbsp; · &nbsp;
+            <a href="emergency.html">Blood Request</a>
+            &nbsp; · &nbsp;
+            <a href="about.html">About</a>
+        </p>
+
+        <p>
+            &copy; 2026 Blood Donor Finder. College Project.
+        </p>
+
     </footer>
 
-    <script src="js/script.js" defer></script>
 </body>
 </html>
