@@ -16,3 +16,9 @@ Thumbs.db
 # Local exports of donor data - never commit real records
 *.csv
 *-export.xlsx
+
+# Node.js backend secrets
+backend/credentials.json
+backend/.env
+backend/node_modules/
+
