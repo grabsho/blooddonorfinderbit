@@ -1,5 +1,6 @@
 // Blood Donor Finder — frontend application logic
 // Keep the Apps Script URL in sync with the deployed Google Apps Script web app.
+const NODE_API_URL = "http://localhost:3000";
 
 const APPS_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbwExlMBAGM9PrCtF8-gtuKSHhBoO_yiIQu-awFa-kMORe0t2fOs_gxatIaQouH-dp8P/exec";
@@ -57,69 +58,70 @@ async function searchDonorsFromBackend(
 
 async function registerDonorToBackend(donorData) {
   try {
-    return await requestJson(APPS_SCRIPT_URL, {
+    return await requestJson(`${NODE_API_URL}/api/donors`, {
       method: "POST",
       headers: {
-        "Content-Type": "text/plain;charset=utf-8"
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        action: "addDonor",
-        ...donorData
-      })
+      body: JSON.stringify(donorData)
     });
   } catch (error) {
     console.error("Register error:", error);
 
     return {
       success: false,
-      error: "Network or server error"
+      error: error.message || "Network or server error"
     };
   }
 }
 
 async function submitEmergencyToBackend(requestData) {
   try {
-    return await requestJson(APPS_SCRIPT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify({
-        action: "addEmergency",
-        ...requestData
-      })
-    });
+    return await requestJson(
+      `${NODE_API_URL}/api/emergency-requests`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(requestData)
+      }
+    );
   } catch (error) {
     console.error("Emergency request error:", error);
 
     return {
       success: false,
-      error: "Network or server error"
+      error: error.message || "Network or server error"
     };
   }
 }
 
+
 async function withdrawConsentFromBackend(phone) {
   try {
-    return await requestJson(APPS_SCRIPT_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify({
-        action: "withdrawConsent",
-        phone: normalizePhoneInput(phone)
-      })
-    });
+    return await requestJson(
+      `${NODE_API_URL}/api/donors/withdraw-consent`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          phone: normalizePhoneInput(phone)
+        })
+      }
+    );
   } catch (error) {
     console.error("Withdraw consent error:", error);
 
     return {
       success: false,
-      error: "Network or server error"
+      error: error.message || "Network or server error"
     };
   }
 }
+
 
 // Returns null (not []) on failure so callers can tell "backend down"
 // apart from "there is genuinely nothing to show".
